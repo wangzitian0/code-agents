@@ -28,8 +28,32 @@ AI Control Plane 是一个**本地 AI 基础设施网关**。它通过 Docker �
 ## 快速开始 (Pre-Alpha)
 
 ### 前置要求
+
 *   Docker / Podman
 *   Node.js (用于客户端 CLI)
+
+### 开发环境设置
+
+**Mise** 统一管理工具版本和任务：
+
+```bash
+# 1. 安装 mise（一次性）
+curl https://mise.run | sh
+
+# 2. 进入项目目录
+cd code-agents
+
+# 3. 一键设置环境（自动安装工具 + 检查设置 + 启动服务）
+mise run ready
+
+# 常用命令
+mise run gemini                # 启动 Gemini（后台服务 + 前台 Gemini，使用 gemini -y -s）
+mise run start                 # 只启动后台服务（不启动 Gemini）
+mise run status                # 查看服务状态
+mise run logs                  # 查看日志
+mise run stop-services         # 停止服务
+mise run clean                 # 清理临时文件
+```
 
 ### 启动 Control Plane
 

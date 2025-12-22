@@ -1,0 +1,196 @@
+# Mise (formerly rtx) - Tool Version Manager
+# 统一管理项目所需的所有工具版本
+# 安装: curl https://mise.run | sh
+# 使用: mise install (自动安装所有工具)
+
+[tools]
+# 包管理器
+bun = "latest"
+uv = "latest"
+
+# 可选：Python 环境（如果需要）
+python = "3.12"
+
+[tasks.setup]
+description = "安装所有工具"
+run = """
+mise install
+"""
+
+[tasks.check]
+description = "检查工具版本"
+run = """
+mise ls
+"""
+
+[tasks.setup-gemini]
+description = "设置 Gemini 配置（备份现有配置并创建软链接到仓库）"
+run = "bash scripts/setup_gemini.sh"
+
+[tasks.install-mcp-servers]
+description = "安装 MCP 服务器（使用 bun 和 uv）"
+run = """
+echo "📦 安装 MCP 服务器..."
+echo "安装 basic-memory (Python)..."
+uv tool install basic-memory || echo "⚠️  basic-memory 安装失败，可能需要手动安装: uv tool install basic-memory"
+if uv tool run basic-memory --help > /dev/null 2>&1; then
+    echo "✅ basic-memory 已安装并可用"
+else
+    echo "⚠️  basic-memory 可能未正确安装，请检查"
+fi
+if [ -f "package.json" ]; then
+    echo "安装 JS MCP 服务器..."
+    bun install
+fi
+echo "✅ MCP 服务器安装完成"
+echo "💡 MCP 配置位于: interfaces/.gemini/antigravity/mcp_config.json"
+"""
+
+[tasks.start-bun]
+description = "后台启动 Bun 开发服务器"
+run = """
+if [ -f "package.json" ]; then
+    echo "🚀 启动 Bun 服务..."
+    nohup bun run dev > .bun.log 2>&1 &
+    echo $! > .bun.pid
+    echo "✅ Bun 已启动 (PID: $(cat .bun.pid), 日志: .bun.log)"
+else
+    echo "⚠️  未找到 package.json，跳过 Bun 启动"
+fi
+"""
+
+[tasks.start-uv]
+description = "后台启动 uv 服务"
+run = """
+if [ -f "pyproject.toml" ] || [ -f "requirements.txt" ]; then
+    echo "✅ uv 环境已准备（如需启动服务，请修改此任务）"
+else
+    echo "⚠️  未找到 Python 项目文件，跳过 uv 启动"
+fi
+"""
+
+[tasks.stop-services]
+description = "停止后台服务"
+run = """
+echo "🛑 停止后台服务..."
+if [ -f ".bun.pid" ]; then
+    pid=$(cat .bun.pid)
+    if kill -0 "$pid" 2>/dev/null; then
+        kill "$pid"
+        echo "✅ Bun 已停止 (PID: $pid)"
+    fi
+    rm -f .bun.pid
+fi
+if [ -f ".uv.pid" ]; then
+    pid=$(cat .uv.pid)
+    if kill -0 "$pid" 2>/dev/null; then
+        kill "$pid"
+        echo "✅ uv 服务已停止 (PID: $pid)"
+    fi
+    rm -f .uv.pid
+fi
+echo "✅ 所有服务已停止"
+"""
+
+[tasks.status]
+description = "查看服务状态"
+run = """
+echo "📊 服务状态："
+echo ""
+if [ -f ".bun.pid" ]; then
+    pid=$(cat .bun.pid)
+    if kill -0 "$pid" 2>/dev/null; then
+        echo "✅ Bun: 运行中 (PID: $pid)"
+    else
+        echo "❌ Bun: 未运行"
+    fi
+else
+    echo "❌ Bun: 未启动"
+fi
+if [ -f ".uv.pid" ]; then
+    pid=$(cat .uv.pid)
+    if kill -0 "$pid" 2>/dev/null; then
+        echo "✅ uv: 运行中 (PID: $pid)"
+    else
+        echo "❌ uv: 未运行"
+    fi
+else
+    echo "ℹ️  uv: 未配置服务"
+fi
+"""
+
+[tasks.logs]
+description = "查看 Bun 日志"
+run = """
+if [ -f ".bun.log" ]; then
+    echo "📄 Bun 日志："
+    tail -f .bun.log
+else
+    echo "⚠️  未找到日志文件"
+fi
+"""
+
+[tasks.clean]
+description = "清理临时文件"
+run = """
+mise run stop-services
+echo "🧹 清理临时文件..."
+rm -f .bun.log .bun.pid .uv.log .uv.pid
+echo "✅ 清理完成"
+"""
+
+[tasks.start]
+description = "启动所有服务（自动检查和设置 Gemini + MCP）"
+run = """
+# 检查并设置 Gemini 配置
+mise run setup-gemini
+
+# 检查并安装 MCP 服务器
+mise run install-mcp-servers
+
+# 启动服务
+mise run start-bun
+mise run start-uv
+echo ""
+echo "✅ 所有服务已启动"
+echo "查看日志: tail -f .bun.log"
+"""
+
+[tasks.gemini]
+description = "启动 Gemini（后台启动服务 + 前台启动 Gemini）"
+run = """
+# 检查并设置 Gemini 配置
+mise run setup-gemini
+
+# 检查并安装 MCP 服务器
+mise run install-mcp-servers
+
+# 后台启动服务
+mise run start-bun
+mise run start-uv
+
+# 等待服务启动
+sleep 2
+
+# 前台启动 Gemini
+echo ""
+echo "🚀 启动 Gemini..."
+echo "💡 服务已在后台运行，查看状态: mise run status"
+echo "💡 查看日志: mise run logs"
+echo ""
+exec gemini -y -s
+"""
+
+[tasks.ready]
+description = "完整设置：安装工具 + 检查设置 + 启动服务"
+run = """
+# 安装所有工具
+mise install
+
+# 检查并设置（Gemini + MCP + 启动服务）
+mise run start
+echo ""
+echo "🎉 环境就绪！"
+echo "💡 启动 Gemini: mise run gemini"
+"""
+

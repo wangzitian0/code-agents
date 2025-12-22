@@ -63,7 +63,7 @@
 使用 Ansible playbook 来管理配置迁移：
 
 ```bash
-cd /Users/SP14016/zitian/code-agents
+cd ~/zitian/code-agents
 ansible-playbook ansible/setup_gemini.yml
 ```
 

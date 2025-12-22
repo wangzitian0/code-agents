@@ -14,14 +14,5 @@
   },
   "general": {
     "previewFeatures": true
-  },
-  "mcpServers": {
-    "basic-memory": {
-      "command": "bash",
-      "args": [
-        "-lc",
-        "uvx basic-memory mcp"
-      ]
-    }
   }
 }
