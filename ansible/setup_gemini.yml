@@ -1,0 +1,86 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: yes
+  
+  vars:
+    home: "{{ ansible_facts.env.HOME }}"
+    gemini_backup_dir: "{{ home }}/.gemini"
+    # 使用绝对路径，基于 playbook 所在目录
+    code_agents_dir: "{{ playbook_dir | dirname }}"
+    gemini_repo_dir: "{{ code_agents_dir }}/interfaces/.gemini"
+    gemini_link_target: "{{ home }}/.gemini"
+  
+  tasks:
+    - name: 检查 ~/.gemini 是否存在
+      stat:
+        path: "{{ gemini_backup_dir }}"
+      register: gemini_stat
+    
+    - name: 获取软链接目标路径（如果是软链接）
+      shell: readlink -f "{{ gemini_backup_dir }}" 2>/dev/null || echo ""
+      register: current_link_target
+      when: gemini_stat.stat.exists and gemini_stat.stat.islnk
+      changed_when: false
+    
+    - name: 判断是否需要设置
+      set_fact:
+        need_setup: "{{ not (gemini_stat.stat.exists and gemini_stat.stat.islnk and (current_link_target.stdout | default('') == gemini_repo_dir)) }}"
+    
+    - name: 显示跳过信息（如果已经正确链接）
+      debug:
+        msg: |
+          ✓ ~/.gemini 已经正确链接到本 repo
+          - 当前链接: {{ gemini_backup_dir }} -> {{ current_link_target.stdout }}
+          - 目标路径: {{ gemini_repo_dir }}
+          - 无需操作，跳过
+      when: not need_setup
+    
+    - name: 获取当前时间戳
+      set_fact:
+        timestamp: "{{ ansible_date_time.strftime('%y%m%d-%H%M%S') }}"
+      when: need_setup
+    
+    - name: 备份现有的 ~/.gemini（如果不是软链接）
+      shell: |
+        mv "{{ gemini_backup_dir }}" "{{ gemini_backup_dir }}-{{ timestamp }}"
+      when: 
+        - need_setup
+        - gemini_stat.stat.exists
+        - not gemini_stat.stat.islnk
+      register: backup_result
+      changed_when: backup_result.rc == 0
+    
+    - name: 创建 code-agents/interfaces/.gemini 目录
+      file:
+        path: "{{ gemini_repo_dir }}"
+        state: directory
+        mode: '0755'
+      when: need_setup
+    
+    - name: 如果备份了，将内容复制到新目录
+      copy:
+        src: "{{ gemini_backup_dir }}-{{ timestamp }}/"
+        dest: "{{ gemini_repo_dir }}/"
+        mode: preserve
+      when: 
+        - need_setup
+        - gemini_stat.stat.exists 
+        - not gemini_stat.stat.islnk
+    
+    - name: 创建软链接 ~/.gemini -> code-agents/interfaces/.gemini
+      file:
+        src: "{{ gemini_repo_dir }}"
+        dest: "{{ gemini_link_target }}"
+        state: link
+        force: yes
+      when: need_setup
+    
+    - name: 显示完成信息
+      debug:
+        msg: |
+          ✓ 完成 .gemini 配置管理
+          - 备份位置: {{ gemini_backup_dir }}-{{ timestamp if (gemini_stat.stat.exists and not gemini_stat.stat.islnk) else 'N/A' }}
+          - 仓库位置: {{ gemini_repo_dir }}
+          - 软链接: {{ gemini_link_target }} -> {{ gemini_repo_dir }}
+      when: need_setup

@@ -14,7 +14,6 @@ AI Control Plane 是一个**本地 AI 基础设施网关**。它通过 Docker �
 
 - **🐳 Docker Native**: 所有工具依赖（Python, Node, Go）运行在容器中，零污染宿主机。
 - **🔌 Write Once, Use Everywhere**: 配置一次 Git MCP，Cursor 和 Claude 同时拥有代码库读写能力。
-- **🛡️ Security Barrier**: 中间层审计，拦截并记录 AI 对本地文件系统的所有高危操作。
 - **🔄 Recursive Capabilities**: 让 AI 工具互相调用（例如：让 Claude 调用 Gemini CLI 进行联网搜索）。
 
 ## 架构概览

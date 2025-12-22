@@ -1,0 +1,17 @@
+# Gemini 配置目录 - 反向操作：默认忽略所有，只允许影响体验的配置文件
+
+# 忽略所有文件（默认安全）
+*
+
+# 明确允许入库的配置文件（影响体验的核心配置）
+# 根目录配置
+!settings.json
+!README.md
+!.gitignore
+!GEMINI.md
+
+# Antigravity 配置（影响功能体验）
+!antigravity/
+!antigravity/mcp_config.json
+!antigravity/browserAllowlist.txt
+

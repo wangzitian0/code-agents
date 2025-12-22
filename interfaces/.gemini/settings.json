@@ -1,0 +1,27 @@
+{
+  "security": {
+    "auth": {
+      "selectedType": "oauth-personal"
+    }
+  },
+  "ui": {
+    "hideContextSummary": true,
+    "theme": "GitHub Light",
+    "footer": {
+      "hideModelInfo": false,
+      "hideContextPercentage": false
+    }
+  },
+  "general": {
+    "previewFeatures": true
+  },
+  "mcpServers": {
+    "basic-memory": {
+      "command": "bash",
+      "args": [
+        "-lc",
+        "uvx basic-memory mcp"
+      ]
+    }
+  }
+}
