@@ -34,25 +34,24 @@ AI Control Plane 是一个**本地 AI 基础设施网关**。它通过 Docker �
 
 ### 开发环境设置
 
-**Mise** 统一管理工具版本和任务：
+**Asdf** 管理工具版本，**Makefile** 管理任务：
 
 ```bash
-# 1. 安装 mise（一次性）
-curl https://mise.run | sh
-
-# 2. 进入项目目录
+# 一键设置（自动安装 asdf + 工具 + 环境）
 cd code-agents
+make ready
 
-# 3. 一键设置环境（自动安装工具 + 检查设置 + 启动服务）
-mise run ready
+# 首次运行会自动安装 asdf 和所有工具
+# 如果提示需要重新加载 shell，运行: source ~/.zshrc 然后再次 make ready
 
 # 常用命令
-mise run gemini                # 启动 Gemini（后台服务 + 前台 Gemini，使用 gemini -y -s）
-mise run start                 # 只启动后台服务（不启动 Gemini）
-mise run status                # 查看服务状态
-mise run logs                  # 查看日志
-mise run stop-services         # 停止服务
-mise run clean                 # 清理临时文件
+make gemini         # 启动 Gemini（后台服务 + 前台 Gemini，使用 gemini -y -s）
+make start          # 检查设置并启动服务（不启动 Gemini）
+make status         # 查看服务状态
+make logs           # 查看日志
+make stop-services  # 停止服务
+make clean          # 清理临时文件
+make help           # 显示所有可用命令
 ```
 
 ### 启动 Control Plane

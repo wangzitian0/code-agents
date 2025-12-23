@@ -14,5 +14,16 @@
   },
   "general": {
     "previewFeatures": true
+  },
+  "mcpServers": {
+    "basic-memory": {
+      "command": "uv",
+      "args": [
+        "tool",
+        "run",
+        "basic-memory",
+        "mcp"
+      ]
+    }
   }
 }

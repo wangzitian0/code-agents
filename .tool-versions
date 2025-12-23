@@ -1,0 +1,15 @@
+# asdf 工具版本配置
+# 安装: brew install asdf
+# 使用: asdf install (自动安装所有工具)
+
+# 包管理器
+uv 0.9.18
+python 3.12.12
+
+# 注意：
+# - bun 使用系统安装版本（~/.bun/bin/bun）
+# - python 和 uv 通过 asdf 管理（沙箱化，不影响系统）
+# - Python 安装说明：
+#   * macOS ARM64 通常有预编译版本，安装很快（1-2分钟）
+#   * 只有在没有预编译版本时才会从源码编译（5-15分钟）
+
