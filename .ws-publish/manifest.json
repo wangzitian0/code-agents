@@ -1,0 +1,23 @@
+{
+  "adapter": "rules-v2",
+  "dirty_inputs": [],
+  "inputs": {
+    "repo": "ec956fe240d67b2fc3b500bcb36e4a18572b07315dfa79576f11c22ea47f040e",
+    "root": "906ae9f97dc3812e370f017b6ca08e49bcac70e754901db071d6fd262352ea4e"
+  },
+  "language": "en",
+  "outputs": {
+    "AGENTS.md": "6e45ef0b5d96bd1d94ab0a4dabac825ebd7e6aa7d1d0388a587779d24226f3a4",
+    "CLAUDE.md": "a54ff182c7e8acf56acfd6e4b9c3ff41e2c41a31c9b211b2deb9df75d9a478f9"
+  },
+  "profiles": [
+    "code"
+  ],
+  "schema": 2,
+  "source_revision": "3bd08b82cdbc44268e4e3b7234836fd0cbe5275f",
+  "target": {
+    "remote": "github.com/wangzitian0/code-agents",
+    "repo": "code-agents",
+    "workspace": "zitian"
+  }
+}
