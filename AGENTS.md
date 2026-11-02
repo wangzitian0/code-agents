@@ -1,11 +1,11 @@
-<!-- WS_STATIC_START adapter=rules-v2 inputs=f8fb0a17079550bd7647941379a4b70073ea4464643f8e03cb91e022be2dbbc3 -->
+<!-- WS_STATIC_START adapter=rules-v2 inputs=c268eb8b02e7d3c7e41e498ce78c6205cbe95b5c6799e6fc9ba3faf3ceebb3f1 -->
 <!-- Generated file: do not edit by hand. These rules are maintained in the owner's rule source and re-rendered here. -->
 
 ## Engineering discipline
 
-- **Measure the physical system first.** Before an abstract architecture proposal, inspect the system with read-only probes such as `time cmd`, process chains, and file-descriptor locks. A conceptually neat story without physical evidence is insufficient. A probe must not write. Do not combine validation and action in one command: a POST permission probe can create a resource, and a trial commit can leave a real commit. Measure, read the result, then decide, with a stop point between these steps.
+- **Measure the physical system first.** Inspect the system with read-only probes (`time cmd`, process chains, file locks) before proposing architecture. Never combine validation and mutation in one command. Measure, read the result, then decide.
 - **Green does not prove truth.** The tested system writes its own unit tests, CI, and issue states. Cross-check critical conclusions against two external sources not written by this repository.
-- **Tests must be falsifiable.** Do not hide assertions in `if (exists)` or `if (code != 0)` so failures run zero assertions. Do not accept tautologies such as `typeof null === 'object'` or `result !== undefined || true`. Source-text `indexOf` matches against prose are not integration tests. Duplicate test function identifiers can silently shadow earlier tests (Python `def` and duplicate JS function/const/export names); duplicate string titles in `test()` or `it()` instead run both. A green count is not coverage evidence. Make a new test fail under a relevant mutation. A read-only reviewer treats such fake-test patterns as CRITICAL merge blockers.
+- **Tests must be falsifiable.** Never hide assertions inside `if` branches or accept tautologies. Source-text `indexOf` matches against prose are not integration tests. Avoid duplicate test function names that shadow earlier tests. Make every new test fail under a relevant mutation; fake tests are CRITICAL merge blockers.
 - **Falsifiable documentation and assertions:** State test requirements, error messages, and specifications in concrete ASD-STE100 terms without vague qualifiers.
 - **One source of truth:** Keep one authoritative definition per core fact. Repeated hardcoding and scattered configuration invite drift.
 - **Clean up during migration:** After the new mechanism is live and equivalence is proved, remove its predecessor, obsolete files, and dead code in the same change. Define contracts first and derive CI from them.
@@ -15,7 +15,7 @@
 - **Physical context verification:** Static file existence does not prove host runtime context injection. Junior runs non-interactive probes (`-p` or headless exec) with low-cost models, asserting visible specification text across root and deep subdirectories.
 - **Host verification scope:** Official host CLIs are the primary execution environment. Regular testing covers Antigravity 2.0 project workspaces (`.agents/skills/` and project rules); standalone desktop chat apps without directory awareness are excluded.
 - **Local and remote test segregation:** Inner-loop verification (Senior, Junior, Intern) runs only focused tests on changed files (`pytest <file>::<test> -x`). Full-suite regression runs on remote CI, or locally at most once before merge.
-- **Bounded file reads:** Pass `StartLine` and `EndLine` (`<= 120` lines per call) when reading existing files with `view_file`.
+- **Bounded file reads:** Pass `StartLine` and `EndLine` (`<= 800` lines per call) when reading existing files with `read_file` or `view_file`.
 
 ## Production reservation
 
@@ -30,7 +30,7 @@ The single definition of the production reservation. Other tiers, skills and gat
 # AI Agent Instructions — Claude Code Agents
 
 > **Repository Archetype**: `agent-interface` (AI Control Plane & Client Interfaces)
-> **Rule Carrier**: `AGENTS.md` is generated; `CLAUDE.md` is a symlink to it. Do not edit either by hand.
+> **Rule Carrier**: `AGENTS.md` is generated. Do not edit it by hand.
 > **Merge Authority**: Standard PRs with clean tests and review passing may be merged by agents per workspace standing grant.
 
 ## Context & Role
@@ -40,7 +40,7 @@ The single definition of the production reservation. Other tiers, skills and gat
 
 ## Guidelines
 
-1. **Rule Carrier**: `CLAUDE.md` is a symlink to the generated `AGENTS.md`. Do not create separate rule files.
+1. **Rule Carrier**: `AGENTS.md` is the single generated rule carrier. Do not create separate rule files.
 2. **MCP Standards**: Ensure all interfaces and adapters comply with Model Context Protocol standards.
 3. **Decoupling**: Do NOT hardcode private server IPs or private domains in client code.
 4. **Testing**: Run container-based or local tests before declaring completion.
