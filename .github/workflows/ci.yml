@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verify:
+    name: Verify Shell & JSON Configs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check shell script syntax
+        run: |
+          set -e
+          git ls-files '*.sh' | while IFS= read -r script; do
+            echo "Checking $script"
+            bash -n "$script"
+          done
+
+      - name: Validate tracked JSON files
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, subprocess
+
+          files = subprocess.check_output(["git", "ls-files", "*.json"], text=True).splitlines()
+          assert files, "expected at least one tracked JSON file"
+          for rel in files:
+              json.loads(pathlib.Path(rel).read_text(encoding="utf-8"))
+          print(f"Validated {len(files)} JSON file(s).")
+          PY
