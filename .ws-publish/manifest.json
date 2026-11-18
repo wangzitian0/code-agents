@@ -3,17 +3,17 @@
   "dirty_inputs": [],
   "inputs": {
     "repo": "b077931f730561bd506b3e23f94825ed1f72c7fa35223c9c3435feb352d639b7",
-    "root": "7d739bbcbc2be2bc2f1744f5e51f67a56f5de66a02b3651b87187941b234404b"
+    "root": "32230eec3bf47078e386d2d331e5634490cbb8630befaeeccc706f3a849c33db"
   },
   "language": "en",
   "outputs": {
-    "AGENTS.md": "84b0a36f693a4b9b1968efc30081a7805979e118b413658dccd1fad542e55262"
+    "AGENTS.md": "365f1a4ba246a77fa247d66f79fb0239cc5f28192c8ce44e2d727abaa566e556"
   },
   "profiles": [
     "code"
   ],
   "schema": 2,
-  "source_revision": "27fffb9f97441319b48b1dd61ef1dcc37ca57015",
+  "source_revision": "8bf2bc3d1c6e5467e01d91063455def45b21b400",
   "target": {
     "remote": "github.com/wangzitian0/code-agents",
     "repo": "code-agents",
