@@ -1,4 +1,4 @@
-<!-- WS_STATIC_START adapter=rules-v2 inputs=87797b69ed5b8ecc6cff838ecaf32d7c6d08a9f869178c9eb734d05c3491d802 -->
+<!-- WS_STATIC_START adapter=rules-v2 inputs=ae4b17ac99d9623241e356fd2418aad68b34176fdc1a0b60b7a4a0ba94e46ce0 -->
 <!-- Generated file: do not edit by hand. These rules are maintained in the owner's rule source and re-rendered here. -->
 
 ## Engineering discipline
@@ -13,7 +13,7 @@
 - **Fix an owner hold by deletion:** Delete the rule or gate branch that holds non-production work. Do not add logic that reads a command to permit it. Such logic lets unsafe commands through.
 - **Define guard scope from what it must govern, not from today's passing tree.** Let the guard fail on existing violations, then repair them. A guard never seen failing is not yet evidence of protection.
 - **Worktree self-sufficiency:** Every worktree must resolve its dependencies, toolchain, skills, and configuration internally. Tools and tests must not navigate upward with `../..` to locate files in parent checkouts.
-- **Local and remote test segregation:** Inner-loop verification runs single-process focused tests (`pytest -n0 --no-cov -o addopts= <file>::<test> -x`). Full-suite regression runs on remote CI, or locally once before merge.
+- **Local and remote test segregation:** Before a PR, run only the focused tests of the change in one process (`pytest <file>::<test> -x`). The full suite, parallel runs and coverage run on remote CI only.
 - **Bounded file reads:** Pass `StartLine` and `EndLine` (`<= 800` lines per call) when reading existing files with `read_file` or `view_file`.
 
 ## Production reservation
@@ -42,5 +42,5 @@ The single definition of the production reservation. Other tiers, skills and gat
 1. **Rule Carrier**: `AGENTS.md` is the single generated rule carrier. Do not create separate rule files.
 2. **MCP Standards**: Ensure all interfaces and adapters comply with Model Context Protocol standards.
 3. **Decoupling**: Do NOT hardcode private server IPs or private domains in client code.
-4. **Testing**: Run container-based or local tests before declaring completion.
+4. **Testing**: Run the focused checks of the change. CI checks shell syntax and JSON only.
 <!-- WS_STATIC_END -->
